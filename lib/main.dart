@@ -1,19 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uvi/homepage.dart';
 
 import 'package:uvi/login.dart';
 
 void main() {
-  runApp(const UVI());
+  runApp(UVI());
 }
 
-class UVI extends StatelessWidget {
-  const UVI({super.key});
+class UVI extends StatefulWidget {
+  UVI({super.key});
+
+  @override
+  State<UVI> createState() => _UVIState();
+}
+
+class _UVIState extends State<UVI> {
+  getdata() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    int? _userId = pref.getInt("userId");
+    return _userId;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getdata();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: FutureBuilder(
+        future: getdata(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            return HomePage();
+          } else {
+            return LoginPage();
+          }
+        },
+      ),
     );
   }
 }

@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:ui';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uvi/homepage.dart';
+import 'package:uvi/main.dart';
 import 'package:uvi/signup.dart';
 import 'constants/constants.dart' as constants;
 
@@ -17,6 +20,22 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  setUserId(int userId) async {
+    SharedPreferences perf = await SharedPreferences.getInstance();
+    perf.setInt("userId", userId);
+  }
+
+  Future<int?> signIn(String email, String password) async {
+    final data = await http.get(Uri.parse(
+        'http://192.168.0.102/uvi-user/app-api/credentials.php?email=${email}&pass=${password}&action=login'));
+    final jsondata = jsonDecode(data.body);
+    if (jsondata != null && jsondata['msg'] == "Valid") {
+      return jsondata['user_id'];
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,10 +77,22 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => HomePage(),
-                        ));
+                      onPressed: () async {
+                        int? userId = await signIn(_email.text, _password.text);
+                        if (userId == null) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text('Please Enter Correct Details'),
+                          ));
+                        } else {
+                          setUserId(userId);
+                          if (!mounted) return;
+                          Navigator.of(context)
+                              .pushReplacement(MaterialPageRoute(
+                            builder: (context) => UVI(),
+                          ));
+                        }
                       },
                       child: Text("Login"))),
               const SizedBox(

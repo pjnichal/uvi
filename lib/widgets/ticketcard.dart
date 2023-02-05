@@ -7,7 +7,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import '../constants/constants.dart' as constants;
 
 class TicketCard extends StatelessWidget {
-  const TicketCard({super.key});
+  final String primary, second;
+  const TicketCard({
+    super.key,
+    required this.primary,
+    required this.second,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +26,19 @@ class TicketCard extends StatelessWidget {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  "Primary Info",
+                  primary,
                   style: TextStyle(fontSize: 18),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 7,
                 ),
-                Text("Secondary Info"),
-                SizedBox(
+                Text(second),
+                const SizedBox(
                   height: 5,
                 ),
-                Text("Date and time"),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
               ],

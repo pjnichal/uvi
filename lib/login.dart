@@ -27,8 +27,11 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<int?> signIn(String email, String password) async {
     final data = await http.get(Uri.parse(
-        'http://192.168.0.102/uvi-user/app-api/credentials.php?email=${email}&pass=${password}&action=login'));
+        '${constants.apiLink}/credentials.php?email=${email}&pass=${password}&action=login'));
     final jsondata = jsonDecode(data.body);
+    if (jsondata != null && jsondata['msg'] == "No_Acc") {
+      return -1;
+    }
     if (jsondata != null && jsondata['msg'] == "Valid") {
       return jsondata['user_id'];
     }
@@ -79,7 +82,12 @@ class _LoginPageState extends State<LoginPage> {
                   child: ElevatedButton(
                       onPressed: () async {
                         int? userId = await signIn(_email.text, _password.text);
-                        if (userId == null) {
+                        if (userId == -1) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text('User Not Found Create Account'),
+                          ));
+                        } else if (userId == null) {
                           if (!mounted) return;
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(

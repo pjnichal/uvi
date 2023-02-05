@@ -22,8 +22,13 @@ class _MembershipState extends State<Membership> {
     List<Detail> list = [];
     SharedPreferences pref = await SharedPreferences.getInstance();
     int? userId = pref.getInt("userId");
-    final data = await http.get(Uri.parse(
-        '${constants.apiLink}/getvalidators.php?user_id=$userId&action=getvalidators'));
+    final data = await http.get(
+        Uri.parse(
+            '${constants.apiLink}/getvalidators.php?user_id=$userId&action=getvalidators'),
+        headers: {
+          "Cookie":
+              "__test=cd0c60fc40e383295a552208f655657c;expires=2024-03-11T15:01:26.586Z; path=/"
+        });
     final jsondata = jsonDecode(data.body);
     print(jsondata.runtimeType);
 
@@ -60,7 +65,9 @@ class _MembershipState extends State<Membership> {
               ],
             );
           }
-          return Text("Something Went Wrong");
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         },
       ),
     );

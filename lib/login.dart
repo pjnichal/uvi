@@ -26,9 +26,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<int?> signIn(String email, String password) async {
-    final data = await http.get(Uri.parse(
-        '${constants.apiLink}/credentials.php?email=${email}&pass=${password}&action=login'));
-    final jsondata = jsonDecode(data.body);
+    final data = await http.get(
+        Uri.parse(
+            '${constants.apiLink}/credentials.php?email=${email}&pass=${password}&action=login'),
+        headers: {
+          "Cookie":
+              "__test=cd0c60fc40e383295a552208f655657c;expires=2024-03-11T15:01:26.586Z; path=/"
+        });
+    print(data.body + "  ==========================");
+    final jsondata = jsonDecode(data.body.toString());
+
     if (jsondata != null && jsondata['msg'] == "No_Acc") {
       return -1;
     }

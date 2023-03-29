@@ -4,10 +4,14 @@ root= tkinter.Tk()
 import requests
 import json
 import time
-
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+import time
+from mfrc522 import SimpleMFRC522
+reader = SimpleMFRC522()
 root.geometry("800x500")
-root.title("Bus Application")
-label = tkinter.Label(root,text="Bus",font=('Arial',18))
+root.title("Gym Application")
+label = tkinter.Label(root,text="Gym",font=('Arial',18))
 label.pack(pady=20)
 
 date = tkinter.Label(root,text="Date :",font=('Arial',18))
@@ -40,9 +44,14 @@ B = tkinter.Button(root, text = "Start", command = start)
 
 
 def checkvalid():
+    print("reading")
+    id,text = reader.read()
+    cardId =text
+    GPIO.cleanup()
+    print(text)
 
     apiId= "V3xeCqAhwXNj"
-    cardId = "654321"
+    
     api_url = "http://uviindia.tech/validate?apiid={}&cardid={}".format(apiId,cardId)
     response = requests.get(api_url).text
     response_info = json.loads(response)
@@ -89,4 +98,5 @@ def checkvalid():
 
 B.pack(pady=20)
 root.mainloop()
+
 

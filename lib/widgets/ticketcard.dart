@@ -47,7 +47,7 @@ class TicketCard extends StatelessWidget {
               backgroundColor: constants.secColor,
               minRadius: 25,
               child: Icon(
-                Icons.train,
+                Icons.confirmation_num_outlined,
                 color: Colors.black87,
                 size: 30,
               ),

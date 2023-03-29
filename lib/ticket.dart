@@ -23,12 +23,9 @@ class _TicketState extends State<Ticket> {
     SharedPreferences pref = await SharedPreferences.getInstance();
     int? userId = pref.getInt("userId");
     final data = await http.get(
-        Uri.parse(
-            '${constants.apiLink}/getvalidators.php?user_id=$userId&action=getvalidators'),
-        headers: {
-          "Cookie":
-              "__test=cd0c60fc40e383295a552208f655657c;expires=2024-03-11T15:01:26.586Z; path=/"
-        });
+      Uri.parse(
+          '${constants.apiLink}/uviuser/getvalidators.php?user_id=$userId&action=getvalidators'),
+    );
     final jsondata = jsonDecode(data.body);
     print(jsondata.runtimeType);
 
@@ -56,8 +53,14 @@ class _TicketState extends State<Ticket> {
       builder: (context, snapshot) {
         print(snapshot.hasData);
 
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.data == null) {
+            return Center(child: Text("No data found"));
+          }
+        }
         if (snapshot.hasData) {
           final List<Detail>? data = snapshot.data;
+
           print(data!.first.fromDate);
           return ListView(
             children: [
@@ -74,6 +77,7 @@ class _TicketState extends State<Ticket> {
             ],
           );
         }
+
         return const Center(
           child: CircularProgressIndicator(),
         );

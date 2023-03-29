@@ -22,7 +22,7 @@ class MembershipCard extends StatelessWidget {
             backgroundColor: Color.fromARGB(255, 13, 195, 250),
             minRadius: 40,
             child: Icon(
-              Icons.train,
+              Icons.calendar_month,
               color: Colors.black87,
               size: 50,
             ),

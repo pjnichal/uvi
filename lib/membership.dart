@@ -23,12 +23,9 @@ class _MembershipState extends State<Membership> {
     SharedPreferences pref = await SharedPreferences.getInstance();
     int? userId = pref.getInt("userId");
     final data = await http.get(
-        Uri.parse(
-            '${constants.apiLink}/getvalidators.php?user_id=$userId&action=getvalidators'),
-        headers: {
-          "Cookie":
-              "__test=cd0c60fc40e383295a552208f655657c;expires=2024-03-11T15:01:26.586Z; path=/"
-        });
+      Uri.parse(
+          '${constants.apiLink}/uviuser/getvalidators.php?user_id=$userId&action=getvalidators'),
+    );
     final jsondata = jsonDecode(data.body);
     print(jsondata.runtimeType);
 
@@ -49,6 +46,11 @@ class _MembershipState extends State<Membership> {
       child: FutureBuilder(
         future: getData(),
         builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data == null) {
+              return Center(child: Text("No data found"));
+            }
+          }
           if (snapshot.hasData) {
             return GridView(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -65,6 +67,7 @@ class _MembershipState extends State<Membership> {
               ],
             );
           }
+
           return const Center(
             child: CircularProgressIndicator(),
           );

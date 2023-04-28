@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<int?> signIn(String email, String password) async {
     final data = await http.get(
       Uri.parse(
-          '${constants.apiLink}/uviuser/credentials.php?email=${email}&pass=${password}&action=login'),
+          '${constants.apiLink}/credentials.php?email=${email}&pass=${password}&action=login'),
     );
 
     final jsondata = jsonDecode(data.body.toString());

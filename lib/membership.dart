@@ -24,7 +24,7 @@ class _MembershipState extends State<Membership> {
     int? userId = pref.getInt("userId");
     final data = await http.get(
       Uri.parse(
-          '${constants.apiLink}/uviuser/getvalidators.php?user_id=$userId&action=getvalidators'),
+          '${constants.apiLink}/getvalidators.php?user_id=$userId&action=getvalidators'),
     );
     final jsondata = jsonDecode(data.body);
     print(jsondata.runtimeType);

@@ -9,6 +9,8 @@ import 'package:uvi/model/detail.dart';
 import 'package:uvi/widgets/ticketcard.dart';
 import 'constants/constants.dart' as constants;
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class Ticket extends StatefulWidget {
   const Ticket({super.key});
@@ -22,9 +24,10 @@ class _TicketState extends State<Ticket> {
     List<Detail> list = [];
     SharedPreferences pref = await SharedPreferences.getInstance();
     int? userId = pref.getInt("userId");
+    print(userId);
     final data = await http.get(
       Uri.parse(
-          '${constants.apiLink}/uviuser/getvalidators.php?user_id=$userId&action=getvalidators'),
+          '${constants.apiLink}/getvalidators.php?user_id=$userId&action=getvalidators'),
     );
     final jsondata = jsonDecode(data.body);
     print(jsondata.runtimeType);
@@ -34,7 +37,8 @@ class _TicketState extends State<Ticket> {
           fromDate: i['from_date'],
           isTicket: i['is_ticket'],
           toDate: i['to_date'],
-          validatingParameter: i['validating_parameter']));
+          validatingParameter: i['validating_parameter'],
+          isValidated: i['is_validated']));
     }
     return list;
   }
@@ -64,16 +68,51 @@ class _TicketState extends State<Ticket> {
           print(data!.first.fromDate);
           return ListView(
             children: [
+              const Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Up Comming Tickets",
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
               ...data.map((e) {
+                DateTime tempDate = DateFormat("dd-MM-yyyy").parse(e.fromDate!);
+
                 if (e.isTicket == 0) {
                   return Container();
-                } else {
+                } else if (e.isTicket == 1 &&
+                    e.isValidated == 0 &&
+                    (tempDate.compareTo(DateTime.now()) == 0 ||
+                        tempDate.compareTo(DateTime.now()) > 0)) {
+                  print("trueeeeeee");
                   return TicketCard(
                     primary: e.validatingParameter!,
                     second: e.fromDate!,
                   );
+                } else {
+                  return Container();
                 }
-              }).toList()
+              }).toList(),
+              const Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Expired Tickets",
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+              ...data.map((e) {
+                DateTime tempDate = DateFormat("dd-MM-yyyy").parse(e.fromDate!);
+                if ((e.isTicket == 1 && e.isValidated == 1) ||
+                    (e.isTicket == 1 &&
+                        tempDate.compareTo(DateTime.now()) < 0)) {
+                  return TicketCard(
+                    primary: e.validatingParameter!,
+                    second: e.fromDate!,
+                  );
+                } else {
+                  return Container();
+                }
+              }).toList(),
             ],
           );
         }

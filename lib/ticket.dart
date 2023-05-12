@@ -82,7 +82,7 @@ class _TicketState extends State<Ticket> {
                   return Container();
                 } else if (e.isTicket == 1 &&
                     e.isValidated == 0 &&
-                    (tempDate.compareTo(DateTime.now()) == 0 ||
+                    (DateUtils.isSameDay(tempDate, DateTime.now()) ||
                         tempDate.compareTo(DateTime.now()) > 0)) {
                   print("trueeeeeee");
                   return TicketCard(
@@ -102,9 +102,10 @@ class _TicketState extends State<Ticket> {
               ),
               ...data.map((e) {
                 DateTime tempDate = DateFormat("dd-MM-yyyy").parse(e.fromDate!);
+                print(tempDate.difference(DateTime.now()).inDays);
                 if ((e.isTicket == 1 && e.isValidated == 1) ||
                     (e.isTicket == 1 &&
-                        tempDate.compareTo(DateTime.now()) < 0)) {
+                        tempDate.difference(DateTime.now()).inDays < 0)) {
                   return TicketCard(
                     primary: e.validatingParameter!,
                     second: e.fromDate!,
